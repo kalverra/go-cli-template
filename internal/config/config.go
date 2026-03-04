@@ -19,6 +19,14 @@ const (
 // LoadOption is a function that can be used to load configuration.
 type LoadOption func(*viper.Viper) error
 
+// WithConfigFile sets a specific config file to load.
+func WithConfigFile(path string) LoadOption {
+	return func(v *viper.Viper) error {
+		v.SetConfigFile(path)
+		return nil
+	}
+}
+
 // WithFlags binds flags to the viper instance.
 func WithFlags(flags *pflag.FlagSet) LoadOption {
 	return func(v *viper.Viper) error {
