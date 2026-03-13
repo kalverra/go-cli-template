@@ -5,7 +5,7 @@ go 1.26.0
 tool gotest.tools/gotestsum
 
 require (
-	github.com/charmbracelet/fang v0.4.4
+	github.com/charmbracelet/fang v1.0.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
