@@ -44,6 +44,8 @@ func Load(opts ...LoadOption) (*Config, error) {
 
 	v.SetDefault("log_level", DefaultLogLevel)
 
+	v.AutomaticEnv()
+
 	for _, opt := range opts {
 		if err := opt(v); err != nil {
 			return nil, err
@@ -51,7 +53,9 @@ func Load(opts ...LoadOption) (*Config, error) {
 	}
 
 	if err := v.ReadInConfig(); err != nil {
-		return nil, err
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, err
+		}
 	}
 
 	cfg := &Config{}
