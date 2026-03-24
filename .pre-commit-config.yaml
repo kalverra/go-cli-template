@@ -10,12 +10,12 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
         exclude: go\.sum$
   - repo: https://github.com/golangci/golangci-lint
-    rev: v2.10.1
+    rev: v2.11.3
     hooks:
       - id: golangci-lint-config-verify
       - id: golangci-lint-full
@@ -28,13 +28,6 @@ repos:
       - id: go-mod-tidy
         name: go mod tidy
         entry: go mod tidy
-        pass_filenames: false
-        types_or: [go, go-mod, go-sum]
-        language: golang
-        stages: [pre-commit, pre-push]
-      - id: go-fix
-        name: go fix
-        entry: go fix ./...
         pass_filenames: false
         types_or: [go, go-mod, go-sum]
         language: golang

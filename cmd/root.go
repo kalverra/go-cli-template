@@ -4,9 +4,11 @@ package cmd
 import (
 	"context"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 
 	"github.com/kalverra/go-cli-template/internal/config"
 )
@@ -25,6 +27,10 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	// Handle kebab-case flags as snake_case env vars for clean config
+	rootCmd.SetGlobalNormalizationFunc(func(_ *pflag.FlagSet, name string) pflag.NormalizedName {
+		return pflag.NormalizedName(strings.ReplaceAll(name, "-", "_"))
+	})
 	rootCmd.PersistentFlags().
 		StringVarP(&cfg.LogLevel, "log-level", "l", config.DefaultLogLevel, "Log level (env: LOG_LEVEL)")
 }

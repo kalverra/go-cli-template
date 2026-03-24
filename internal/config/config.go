@@ -2,6 +2,11 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
+
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -30,6 +35,12 @@ func WithConfigFile(path string) LoadOption {
 // WithFlags binds flags to the viper instance.
 func WithFlags(flags *pflag.FlagSet) LoadOption {
 	return func(v *viper.Viper) error {
+		normalizeFunc := flags.GetNormalizeFunc()
+		flags.SetNormalizeFunc(func(fs *pflag.FlagSet, name string) pflag.NormalizedName {
+			result := normalizeFunc(fs, name)
+			name = strings.ReplaceAll(string(result), "-", "_") // Replace hyphens with underscores
+			return pflag.NormalizedName(name)
+		})
 		return v.BindPFlags(flags)
 	}
 }
@@ -40,17 +51,32 @@ func Load(opts ...LoadOption) (*Config, error) {
 
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
-	v.AddConfigPath(".")
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
+	v.AddConfigPath(filepath.Join(home, ".config", "mentat"))
 
 	v.SetDefault("log_level", DefaultLogLevel)
 
-	v.AutomaticEnv()
+	// Bind all configuration fields to environment variables
+	typ := reflect.TypeFor[Config]()
+	for field := range typ.Fields() {
+		tag := field.Tag.Get("mapstructure")
+		if tag != "" {
+			if err := v.BindEnv(tag); err != nil {
+				return nil, err
+			}
+		}
+	}
 
 	for _, opt := range opts {
 		if err := opt(v); err != nil {
 			return nil, err
 		}
 	}
+
+	v.AutomaticEnv()
 
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
