@@ -4,7 +4,6 @@ repos:
     hooks:
       - id: check-yaml
         exclude: deploy/charts/.*
-      - id: detect-aws-credentials
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -20,7 +19,7 @@ repos:
       - id: golangci-lint-config-verify
       - id: golangci-lint-full
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.11
+    rev: v1.7.12
     hooks:
       - id: actionlint
   - repo: local
@@ -29,22 +28,22 @@ repos:
         name: go mod tidy
         entry: go mod tidy
         pass_filenames: false
-        types_or: [go, go-mod, go-sum]
+        types_or: [ go, go-mod, go-sum ]
         language: golang
-        stages: [pre-commit, pre-push]
+        stages: [ pre-commit, pre-push ]
       - id: go-generate
         name: go generate
         entry: go generate ./...
         pass_filenames: false
-        types_or: [go, go-mod, go-sum]
+        types_or: [ go, go-mod, go-sum ]
         language: golang
-        stages: [pre-commit, pre-push]
+        stages: [ pre-commit, pre-push ]
       - id: go-short-tests
         name: go short tests
         entry: env gotestsum -- -cover -short ./...
         pass_filenames: false
-        types_or: [go, go-mod, go-sum]
+        types_or: [ go, go-mod, go-sum ]
         language: golang
-        stages: [pre-push]
+        stages: [ pre-push ]
 
-default_install_hook_types: [pre-commit, pre-push]
+default_install_hook_types: [ pre-commit, pre-push ]

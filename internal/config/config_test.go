@@ -30,19 +30,28 @@ func TestLoadFlags(t *testing.T) {
 	flags.String("log-level", "", "Log level")
 	err := flags.Set("log-level", "debug")
 	require.NoError(t, err)
+	flags.String("example-value", "", "Example value")
+	err = flags.Set("example-value", "flag")
+	require.NoError(t, err)
 	cfg, err := Load(WithFlags(flags))
 	require.NoError(t, err)
 	assert.Equal(t, "debug", cfg.LogLevel)
+	assert.Equal(t, "flag", cfg.Nested.ExampleValue)
 }
 
 func TestFlagsOverrideEnv(t *testing.T) {
 	t.Setenv("LOG_LEVEL", "debug")
+	t.Setenv("NESTED_EXAMPLE_VALUE", "environment")
 
 	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	flags.String("log-level", "", "Log level")
+	flags.String("example-value", "", "Example value")
 	err := flags.Set("log-level", "trace")
+	require.NoError(t, err)
+	err = flags.Set("example-value", "flag")
 	require.NoError(t, err)
 	cfg, err := Load(WithFlags(flags))
 	require.NoError(t, err)
 	assert.Equal(t, "trace", cfg.LogLevel)
+	assert.Equal(t, "flag", cfg.Nested.ExampleValue)
 }

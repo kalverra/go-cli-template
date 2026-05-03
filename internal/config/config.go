@@ -3,10 +3,10 @@ package config
 
 import (
 	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 
+	"github.com/charmbracelet/x/term"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -14,6 +14,14 @@ import (
 // Config is the configuration for the application.
 type Config struct {
 	LogLevel string `mapstructure:"log_level"`
+	AIOutput bool   `mapstructure:"ai_output"`
+
+	Nested Nested `mapstructure:",squash"`
+}
+
+// Nested is an example of a nested configuration struct.
+type Nested struct {
+	ExampleValue string `mapstructure:"example_value"`
 }
 
 const (
@@ -51,13 +59,9 @@ func Load(opts ...LoadOption) (*Config, error) {
 
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
-	}
-	v.AddConfigPath(filepath.Join(home, ".config", "mentat"))
 
 	v.SetDefault("log_level", DefaultLogLevel)
+	v.SetDefault("ai_output", !term.IsTerminal(os.Stdout.Fd()))
 
 	// Bind all configuration fields to environment variables
 	typ := reflect.TypeFor[Config]()
